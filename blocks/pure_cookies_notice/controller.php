@@ -112,6 +112,58 @@ class Controller extends BlockController implements FileTrackableInterface
         return version_compare($config->get('concrete.version'), '8.2.2b2') >= 0;
     }
 
+    /*
+     * Is the current site visitor from EU?
+     *
+     * @return bool
+     */
+    private function isVisitorFromEU()
+    {
+        $session = $this->app->make('session');
+        /* @var \Symfony\Component\HttpFoundation\Session\Session $session */
+        if ($session->has('pureCookieNotifyEU')) {
+            $result = (bool) $session->get('pureCookieNotifyEU');
+        } else {
+            $geolocator = $this->app->make(Geolocator::class);
+            if ($geolocator === null) {
+                // No geolocation library
+                $geolocated = false;
+            } else {
+                /* @var Geolocator $geolocator */
+                $ip = $this->app->make('ip')->getRequestIPAddress();
+                $geolocatorController = $this->app->make(GeolocatorService::class)->getController($geolocator);
+                try {
+                    $geolocated = $geolocatorController->geolocateIPAddress($ip);
+                } catch (Exception $x) {
+                    $geolocated = false;
+                }
+            }
+            if ($geolocated === null) {
+                // Visitors is on a local network -> not EU
+                $result = false;
+            } elseif ($geolocated instanceof GeolocationResult) {
+                $countryCode = $geolocated->getCountryCode();
+                if ($countryCode === '') {
+                    // Geolocation failed -> let's assume it's EU
+                    $result = true;
+                } else {
+                    // Geolocation succeeded: let's check if the country is in the EU
+                    if (in_array($countryCode, Territory::getChildTerritoryCodes('EU'))) {
+                        $result = true;
+                    } else {
+                        $result = false;
+                    }
+                }
+            } else {
+                // Geolocation failed -> let's assume it's EU
+                $result = true;
+            }
+            $session->set('pureCookieNotifyEU', $result);
+        }
+
+        return $result;
+    }
+
     /**
      * Calculated result of shouldShowAgreement
      *
@@ -136,37 +188,7 @@ class Controller extends BlockController implements FileTrackableInterface
             if ($cookie->get($cookieName)) {
                 $this->shouldShowAgreementResult = false;
             } elseif ($this->onlyForEU && $this->geolocationSupported()) {
-                $geolocated = null;
-                try {
-                    $geolocator = $this->app->make(Geolocator::class);
-                    if ($geolocator !== null) {
-                        /* @var Geolocator $geolocator */
-                        $ip = $this->app->make('ip')->getRequestIPAddress();
-                        $geolocatorController = $this->app->make(GeolocatorService::class)->getController($geolocator);
-                        $geolocated = $geolocatorController->geolocateIPAddress($ip);
-                    }
-                } catch (Exception $x) {
-                    $geolocated = false;
-                }
-                if ($geolocated === null) {
-                    // Visitors is on a local network -> not EU
-                } elseif ($geolocated instanceof GeolocationResult) {
-                    $countryCode = $geolocated->getCountryCode();
-                    if ($countryCode === '') {
-                        // Geolocation failed -> let's assume it's EU
-                        $this->shouldShowAgreementResult = true;
-                    } else {
-                        // Geolocation succeeded: let's check if the country is in the EU
-                        if (in_array($countryCode, Territory::getChildTerritoryCodes('EU'))) {
-                            $this->shouldShowAgreementResult = true;
-                        } else {
-                            $this->shouldShowAgreementResult = false;
-                        }
-                    }
-                } else {
-                    // Geolocation failed -> let's assume it's EU
-                    $this->shouldShowAgreementResult = true;
-                }
+                $this->shouldShowAgreementResult = $this->isVisitorFromEU();
             } else {
                 $this->shouldShowAgreementResult = true;
             }
