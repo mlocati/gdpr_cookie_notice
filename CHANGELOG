@@ -4,3 +4,4 @@
 1.1 - several fixes, added editable position
 1.2 - added counter for inputs
 1.2.1 - fixed error with cache block output
+1.3.0 - Show notice only for EU Countries (requires concrete5 8.2.2+), allow accepting cookies with page interactions, allow specifying link color, allow setting to show notice just once even if using multiple block instances
