@@ -10,7 +10,7 @@ $c = Page::getCurrentPage();
 if ($c->isEditMode()) {
     ?>
     <div class="ccm-edit-mode-disabled-item">
-        <?= t('Cookies Notice is disabled in edit mode.') ?>
+        <?php echo t('Cookies Notice is disabled in edit mode.') ?>
     </div>
     <?php
 } elseif (empty($read)) {
@@ -22,20 +22,20 @@ if ($c->isEditMode()) {
         $wrapperClasses[] = 'has-toolbar';
     }
     ?>
-    <div id="pure-cookies-notice-<?= $bID ?>" class="pure-cookies-notice-wrapper <?= implode(' ', $wrapperClasses) ?>" data-bid="<?= $bID ?>">
+    <div id="pure-cookies-notice-<?php echo $bID ?>" class="pure-cookies-notice-wrapper <?php echo implode(' ', $wrapperClasses) ?>" data-bid="<?php echo $bID ?>">
         <div class="pure-cookies-notice-container">
             <?php
             if (!empty($title)) {
                 ?>
-                <div class="pure-cookies-notice-title"><?= $title ?></div>
+                <div class="pure-cookies-notice-title"><?php echo $title ?></div>
                 <?php
             }
             ?>
             <div class="pure-cookies-notice-content">
-                <?= $content ?>
+                <?php echo $content ?>
             </div>
             <div class="pure-cookies-notice-close-button">
-                <?= empty($agreeText) ? t('Ok') : $agreeText ?>
+                <?php echo empty($agreeText) ? t('Ok') : $agreeText ?>
             </div>
             <div class="clearfix"></div>
         </div>
@@ -43,7 +43,7 @@ if ($c->isEditMode()) {
 
     <script>
         $(document).ready(function() {
-            $('#pure-cookies-notice-<?= $bID ?>').pureCookiesNotify(<?= json_encode([
+            $('#pure-cookies-notice-<?php echo $bID ?>').pureCookiesNotify(<?php echo json_encode([
                 'sitewideCookie' => !empty($sitewideCookie),
                 'interactionImpliesOk' => !empty($interactionImpliesOk),
             ]) ?>);
