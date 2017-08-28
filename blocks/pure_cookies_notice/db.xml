@@ -3,15 +3,25 @@
 
 	<table name="btPureCookiesNotice">
 		<field name="bID" type="integer">
-			<unsigned/>
-			<key/>
+			<unsigned />
+			<key />
 		</field>
-		<field name="title" type="string" size="255"/>
-		<field name="content" type="text"/>
-		<field name="agreeText" type="string" size="255"/>
-		<field name="position" type="string" size="32"/>
-		<field name="textColor" type="string" size="32"/>
-		<field name="backgroundColor" type="string" size="32"/>
+		<field name="title" type="string" size="255" />
+		<field name="content" type="text" />
+		<field name="agreeText" type="string" size="255" />
+		<field name="position" type="string" size="32" />
+		<field name="textColor" type="string" size="32" />
+		<field name="linkColor" type="string" size="32" />
+		<field name="backgroundColor" type="string" size="32" />
+		<field name="interactionImpliesOk" type="boolean">
+			<notnull />
+		</field>
+		<field name="sitewideCookie" type="boolean">
+			<notnull />
+		</field>
+		<field name="onlyForEU" type="boolean">
+			<notnull />
+		</field>
 	</table>
 
 </schema>
