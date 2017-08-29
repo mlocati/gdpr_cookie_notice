@@ -8,11 +8,14 @@
 defined('C5_EXECUTE') or die('Access Denied.');
 $c = Page::getCurrentPage();
 if ($c->isEditMode()) {
+    $localization = Localization::getInstance();
+    $localization->pushActiveContext('ui');
     ?>
     <div class="ccm-edit-mode-disabled-item">
         <?php echo t('Cookies Notice is disabled in edit mode.') ?>
     </div>
     <?php
+    $localization->popActiveContext();
 } elseif (empty($read)) {
     $wrapperClasses = [
         $position,
