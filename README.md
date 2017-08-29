@@ -1,5 +1,5 @@
 # Pure/Cookies Notice
-Cookies Notice allows once to notify users of anything, including the use of cookies (The Cookie Law Explained).
+Cookies Notice allows once to notify users of anything, including the use of cookies (The Cookie Law Explained).  Package for CMS [Concrete5](https://www.concrete5.org/).
 
 [Package in marketplace](https://www.concrete5.org/marketplace/addons/cookies-notice/)
 
