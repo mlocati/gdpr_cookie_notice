@@ -248,6 +248,7 @@ class Controller extends BlockController implements FileTrackableInterface
         $this->set('geolocationSupported', $this->geolocationSupported());
         $this->set('color', $this->app->make('helper/form/color'));
         $this->requireAsset('css', 'pure_cookies_notice/edit');
+        $this->requireAsset('javascript', 'bootstrap/tab');
         $this->set('positions', [
             'top' => t('Top'),
             'bottom' => t('Bottom'),

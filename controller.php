@@ -16,7 +16,7 @@ class Controller extends PackageInstaller
 {
     protected $pkgHandle = 'pure_cookies_notice';
     protected $appVersionRequired = '8.1';
-    protected $pkgVersion = '1.3.0';
+    protected $pkgVersion = '1.3.1';
 
     public function getPackageName()
     {
@@ -40,6 +40,15 @@ class Controller extends PackageInstaller
             'pure_cookies_notice/edit', //asset name
             'blocks/pure_cookies_notice/form.css', //path
             [],
+            'pure_cookies_notice' //from package
+        );
+
+        //JS
+        $al->register(
+            'javascript', //asset type
+            'bootstrap/tab', //asset name
+            'assets/js/bootstrap-tab.min.js', //path
+            ['minify' => false],
             'pure_cookies_notice' //from package
         );
         //********************

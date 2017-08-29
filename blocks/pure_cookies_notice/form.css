@@ -1,3 +1,9 @@
+.pure-cookies-notice-edit-container #pure-cookies-notice-edit-tabs {
+  margin-bottom: 20px;
+}
+.pure-cookies-notice-edit-container #pure-cookies-notice-edit-tabs li:after {
+  content: none;
+}
 .pure-cookies-notice-edit-container .form-group.has-counter {
   position: relative;
 }
