@@ -71,6 +71,25 @@ defined('C5_EXECUTE') or die('Access Denied.');
                     <?= $form->select('position', $positions, $position, ['placeholder' => t('Optional. \'Ok\' by default')]) ?>
                 </div>
 
+                <?php
+                if ($geolocationSupported) {
+                    ?>
+                    <div class="form-group">
+                        <?= $form->label('onlyForEU', t('Target visitors')) ?>
+                        <?= $form->select(
+                            'onlyForEU',
+                            [
+                                '1' => t('Show only for site visitors from the European Union'),
+                                '0' => t('Show for every site visitor'),
+                            ],
+                            $onlyForEU ? '1' : '0',
+                            ['required' => 'required']
+                        ) ?>
+                    </div>
+                    <?php
+                }
+                ?>
+
                 <div class="form-group">
                     <?= $form->label('interactionImpliesOk', t('Closing triggers')) ?>
                     <?= $form->select(
@@ -99,25 +118,6 @@ defined('C5_EXECUTE') or die('Access Denied.');
             </fieldset>
         </div>
     </div>
-
-    <?php
-    if ($geolocationSupported) {
-        ?>
-        <div class="form-group">
-            <?= $form->label('onlyForEU', t('Target visitors')) ?>
-            <?= $form->select(
-                'onlyForEU',
-                [
-                    '1' => t('Show only for site visitors from the European Union'),
-                    '0' => t('Show for every site visitor'),
-                ],
-                $onlyForEU ? '1' : '0',
-                ['required' => 'required']
-            ) ?>
-        </div>
-        <?php
-    }
-    ?>
 </div>
 
 <script>
