@@ -1,0 +1,6 @@
+{
+    "name": "guyasyou/pure_cookies_notice",
+    "description": "Package for CMS concrete5 CMS that allows to notify users of anything, including the use of cookies (The Cookie Law Explained).",
+    "type" : "concrete5-package",
+    "license": "MIT"
+}
