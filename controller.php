@@ -16,7 +16,7 @@ class Controller extends PackageInstaller
 {
     protected $pkgHandle = 'pure_cookies_notice';
     protected $appVersionRequired = '8.1';
-    protected $pkgVersion = '1.3.1';
+    protected $pkgVersion = '1.3.2';
 
     public function getPackageName()
     {
