@@ -16,10 +16,11 @@ use Concrete\Core\Geolocator\GeolocationResult;
 use Concrete\Core\Geolocator\GeolocatorService;
 use Exception;
 use Punic\Territory;
+use Concrete\Core\Statistics\UsageTracker\TrackableInterface;
 
 defined('C5_EXECUTE') or die('Access Denied.');
 
-class Controller extends BlockController implements FileTrackableInterface
+class Controller extends BlockController implements TrackableInterface, FileTrackableInterface
 {
     protected $btTable = 'btPureCookiesNotice';
     protected $btDefaultSet = 'other';
