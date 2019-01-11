@@ -240,7 +240,16 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
 
     public function add()
     {
+        $this->set('title', '');
+        $this->set('agreeText', '');
         $this->set('position', 'bottom');
+        $this->set('textColor', '');
+        $this->set('linkColor', '');
+        $this->set('backgroundColor', '');
+        $this->set('sitewideCookie', false);
+        $this->set('onlyForEU', false);
+        $this->set('interactionImpliesOk', false);
+        $this->set('sitewideCookie', true);
         $this->edit();
     }
 
