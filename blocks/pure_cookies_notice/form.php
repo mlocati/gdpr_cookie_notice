@@ -13,6 +13,18 @@ defined('C5_EXECUTE') or die('Access Denied.');
 /* @var Concrete\Core\Form\Service\Form $form */
 /* @var Concrete\Core\Block\View\BlockView $this */
 /* @var Concrete\Core\Block\View\BlockView $view */
+
+/* @var string $title */
+/* @var string $agreeText */
+/* @var string $textColor */
+/* @var string $linkColor */
+/* @var string $backgroundColor */
+/* @var array $positions */
+/* @var string $position */
+/* @var bool $geolocationSupported */
+/* @var bool|string $onlyForEU */
+/* @var bool|string $interactionImpliesOk */
+/* @var bool|string $sitewideCookie */
 ?>
 <div class="pure-cookies-notice-edit-container">
 
