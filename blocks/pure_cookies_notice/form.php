@@ -8,6 +8,7 @@
 defined('C5_EXECUTE') or die('Access Denied.');
 
 /* @var Concrete\Core\Application\Service\UserInterface $ui */
+/* @var Concrete\Core\Validation\CSRF\Token $token */
 /* @var Concrete\Core\Form\Service\Widget\Color $color */
 /* @var Concrete\Package\PureCookiesNotice\Block\PureCookiesNotice\Controller $controller */
 /* @var Concrete\Core\Form\Service\Form $form */
@@ -32,6 +33,7 @@ defined('C5_EXECUTE') or die('Access Denied.');
         ['pure-cookies-notice-edit-basics', t('Basics'), true],
         ['pure-cookies-notice-edit-colors', t('Colors')],
         ['pure-cookies-notice-edit-advanced', t('Advanced')],
+        ['pure-cookies-notice-edit-preview', t('Preview')],
     ]) ?>
 
     <div class="ccm-tab-content" id="ccm-tab-content-pure-cookies-notice-edit-basics">
@@ -133,10 +135,37 @@ defined('C5_EXECUTE') or die('Access Denied.');
         </fieldset>
     </div>
 
+    <div class="ccm-tab-content" id="ccm-tab-content-pure-cookies-notice-edit-preview">
+        <div id="ccm-tab-content-pure-cookies-notice-edit-preview-view"></div>
+    </div>
 </div>
 
 <script>
     $(function() {
         $().pureInputLengthCounter($('.pure-cookies-notice-edit-container input[maxlength]'));
+        $('a[data-tab="pure-cookies-notice-edit-preview"]').on('click', function(e) {
+            e.preventDefault();
+            var $preview = $('#ccm-tab-content-pure-cookies-notice-edit-preview'),
+                $form = $preview.closest('form'),
+                send = {
+                    <?= json_encode($token::DEFAULT_TOKEN_NAME) ?>: <?= json_encode($token->generate('pure-cookie-notice-preview')) ?>
+                }
+            $preview.empty();
+            $form.find('input,textarea,select').each(function() {
+                var $field = $(this),
+                    name = $field.attr('name');
+                if (name) {
+                	send[name] = $field.val();
+                }
+            });
+            new ConcreteAjaxRequest({
+                url: <?= json_encode((string) $view->action('generate_preview')) ?>,
+                data: send,
+                dataType: 'json',
+            	success: function(data) {
+            		$preview.html(data.html);
+            	}
+            });
+        }); 
     });
 </script>

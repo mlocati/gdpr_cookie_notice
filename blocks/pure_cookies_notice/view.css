@@ -4,9 +4,11 @@
  * www.pure-web.ru
  * © 2017
  */
-.pure-cookies-notice-wrapper {
+ .pure-cookies-notice-wrapper:not(.pure-cookies-notice-wrapper-preview) {
   position: fixed;
   z-index: 1000;
+}
+.pure-cookies-notice-wrapper {
   background: rgba(0, 40, 136, 0.8);
   color: #fff;
 }
