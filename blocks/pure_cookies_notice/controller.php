@@ -271,10 +271,10 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
         $e = $this->app->make('error');
 
         if (empty($data['content'])) {
-            $e->add(t(/*i18n: %s is the name of a field */'Required field: %s', 'Content'));
+            $e->add(t('Field "Content" is required'));
         }
         if (empty($data['position'])) {
-            $e->add(t(/*i18n: %s is the name of a field */'Required field: %s', 'Position'));
+            $e->add(t('Field "Position" is required'));
         }
 
         return $e;
