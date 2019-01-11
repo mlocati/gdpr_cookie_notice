@@ -240,16 +240,25 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
 
     public function add()
     {
+        $this->set('title', '');
+        $this->set('agreeText', '');
         $this->set('position', 'bottom');
+        $this->set('textColor', '');
+        $this->set('linkColor', '');
+        $this->set('backgroundColor', '');
+        $this->set('sitewideCookie', false);
+        $this->set('onlyForEU', false);
+        $this->set('interactionImpliesOk', false);
+        $this->set('sitewideCookie', true);
         $this->edit();
     }
 
     public function edit()
     {
+        $this->set('ui', $this->app->make('helper/concrete/ui'));
         $this->set('geolocationSupported', $this->geolocationSupported());
         $this->set('color', $this->app->make('helper/form/color'));
         $this->requireAsset('css', 'pure_cookies_notice/edit');
-        $this->requireAsset('javascript', 'bootstrap/tab');
         $this->set('positions', [
             'top' => t('Top'),
             'bottom' => t('Bottom'),
@@ -271,10 +280,10 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
         $e = $this->app->make('error');
 
         if (empty($data['content'])) {
-            $e->add(t('%s is required', 'Content'));
+            $e->add(t('Field "Content" is required'));
         }
         if (empty($data['position'])) {
-            $e->add(t('%s is required', 'Position'));
+            $e->add(t('Field "Position" is required'));
         }
 
         return $e;
