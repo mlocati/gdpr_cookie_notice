@@ -42,15 +42,6 @@ class Controller extends PackageInstaller
             [],
             'pure_cookies_notice' //from package
         );
-
-        //JS
-        $al->register(
-            'javascript', //asset type
-            'bootstrap/tab', //asset name
-            'assets/js/bootstrap-tab.min.js', //path
-            ['minify' => false],
-            'pure_cookies_notice' //from package
-        );
         //********************
     }
 
