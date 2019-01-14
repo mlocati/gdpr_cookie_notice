@@ -155,16 +155,16 @@ defined('C5_EXECUTE') or die('Access Denied.');
                 var $field = $(this),
                     name = $field.attr('name');
                 if (name) {
-                	send[name] = $field.val();
+                    send[name] = $field.val();
                 }
             });
             new ConcreteAjaxRequest({
                 url: <?= json_encode((string) $view->action('generate_preview')) ?>,
                 data: send,
                 dataType: 'json',
-            	success: function(data) {
-            		$preview.html(data.html);
-            	}
+                success: function(data) {
+                    $preview.html(data.html);
+                }
             });
         }); 
     });
