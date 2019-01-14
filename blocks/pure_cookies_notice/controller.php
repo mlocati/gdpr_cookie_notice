@@ -341,7 +341,12 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
             }
             throw new Exception($token->getErrorMessage());
         }
-        $blockType = $this->app->make(EntityManagerInterface::class)->find(BlockType::class, $this->getBlockTypeID());
+        $em = $this->app->make(EntityManagerInterface::class);
+        if (method_exists($this, 'getBlockTypeID')) {
+            $blockType = $em->find(BlockType::class, $this->getBlockTypeID());
+        } else {
+            $blockType = $em->getRepository(BlockType::class)->findOneBy(['btHandle' => $this->btHandle]);
+        }
         $blockTypeController = $blockType->getController();
         $post = $this->request->request;
 

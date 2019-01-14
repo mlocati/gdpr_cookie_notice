@@ -148,7 +148,7 @@ defined('C5_EXECUTE') or die('Access Denied.');
             var $preview = $('#ccm-tab-content-pure-cookies-notice-edit-preview'),
                 $form = $preview.closest('form'),
                 send = {
-                    <?= json_encode($token::DEFAULT_TOKEN_NAME) ?>: <?= json_encode($token->generate('pure-cookie-notice-preview')) ?>
+                    ccm_token: <?= json_encode($token->generate('pure-cookie-notice-preview')) ?>
                 }
             $preview.empty();
             $form.find('input,textarea,select').each(function() {
