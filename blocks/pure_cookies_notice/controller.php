@@ -17,6 +17,11 @@ use Concrete\Core\Geolocator\GeolocatorService;
 use Exception;
 use Punic\Territory;
 use Concrete\Core\Statistics\UsageTracker\TrackableInterface;
+use Concrete\Core\Http\ResponseFactoryInterface;
+use Concrete\Core\Error\UserMessageException;
+use Doctrine\ORM\EntityManagerInterface;
+use Concrete\Core\Entity\Block\BlockType\BlockType;
+use Concrete\Core\Block\View\BlockView;
 
 defined('C5_EXECUTE') or die('Access Denied.');
 
@@ -43,6 +48,7 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
     public $interactionImpliesOk;
     public $sitewideCookie;
     public $onlyForEU;
+    private $previewing = false;
 
     /**
      * @var \Concrete\Core\Statistics\UsageTracker\AggregateTracker
@@ -198,34 +204,39 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
         return $this->shouldShowAgreementResult;
     }
 
-    private function generateStylesheet()
+    private static function generateCss(Controller $controller)
     {
         $lines = ['<style>'];
-        $lines[] = "#pure-cookies-notice-{$this->bID} {";
-        if (!empty($this->textColor)) {
-            $lines[] = "\tcolor: {$this->textColor};";
+        $lines[] = "#pure-cookies-notice-{$controller->bID} {";
+        if (!empty($controller->textColor)) {
+            $lines[] = "\tcolor: {$controller->textColor};";
         }
-        if (!empty($this->backgroundColor)) {
-            $lines[] = "\tbackground: {$this->backgroundColor};";
-        }
-        $lines[] = '}';
-        $lines[] = "#pure-cookies-notice-{$this->bID} a {";
-        if (!empty($this->linkColor)) {
-            $lines[] = "\tcolor: {$this->linkColor};";
-        }
-        elseif (!empty($this->textColor)) {
-            $lines[] = "\tcolor: {$this->textColor};";
+        if (!empty($controller->backgroundColor)) {
+            $lines[] = "\tbackground: {$controller->backgroundColor};";
         }
         $lines[] = '}';
-        $lines[] = "#pure-cookies-notice-{$this->bID} .pure-cookies-notice-close-button {";
-        if (!empty($this->textColor)) {
-            $lines[] = "\tcolor: {$this->textColor};";
-            $lines[] = "\tborder-color: {$this->textColor};";
+        $lines[] = "#pure-cookies-notice-{$controller->bID} a {";
+        if (!empty($controller->linkColor)) {
+            $lines[] = "\tcolor: {$controller->linkColor};";
+        }
+        elseif (!empty($controller->textColor)) {
+            $lines[] = "\tcolor: {$controller->textColor};";
+        }
+        $lines[] = '}';
+        $lines[] = "#pure-cookies-notice-{$controller->bID} .pure-cookies-notice-close-button {";
+        if (!empty($controller->textColor)) {
+            $lines[] = "\tcolor: {$controller->textColor};";
+            $lines[] = "\tborder-color: {$controller->textColor};";
         }
         $lines[] = '}';
         $lines[] = '</style>';
 
         return implode("\n", $lines);
+    }
+
+    private function generateStylesheet()
+    {
+        return self::generateCss($this, $this->bID);
     }
 
     public function on_start()
@@ -256,6 +267,7 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
     public function edit()
     {
         $this->set('ui', $this->app->make('helper/concrete/ui'));
+        $this->set('token', $this->app->make('token'));
         $this->set('geolocationSupported', $this->geolocationSupported());
         $this->set('color', $this->app->make('helper/form/color'));
         $this->requireAsset('css', 'pure_cookies_notice/edit');
@@ -267,9 +279,14 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
 
     public function view()
     {
-        if ($this->shouldShowAgreement()) {
+        $this->set('previewing', $this->previewing);
+        if ($this->previewing || $this->shouldShowAgreement()) {
             $this->set('read', false);
+            $this->set('bID', $this->bID);
+            $this->set('title', $this->title);
             $this->set('content', $this->getContent());
+            $this->set('agreeText', $this->agreeText);
+            $this->set('position', $this->position);
         } else {
             $this->set('read', true);
         }
@@ -313,5 +330,43 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
     {
         parent::delete();
         $this->tracker->forget($this);
+    }
+
+    public function action_generate_preview()
+    {
+        $token = $this->app->make('token');
+        if (!$token->validate('pure-cookie-notice-preview')) {
+            if (class_exists(UserMessageException::class)) {
+                throw new UserMessageException($token->getErrorMessage());
+            }
+            throw new Exception($token->getErrorMessage());
+        }
+        $em = $this->app->make(EntityManagerInterface::class);
+        if (method_exists($this, 'getBlockTypeID')) {
+            $blockType = $em->find(BlockType::class, $this->getBlockTypeID());
+        } else {
+            $blockType = $em->getRepository(BlockType::class)->findOneBy(['btHandle' => $this->btHandle]);
+        }
+        $blockTypeController = $blockType->getController();
+        $post = $this->request->request;
+
+        $blockTypeController->bID = md5(mt_rand() . '@' . microtime(true));
+        $blockTypeController->title = $post->get('title');
+        $blockTypeController->content = LinkAbstractor::translateTo($post->get('content'));
+        $blockTypeController->agreeText = $post->get('agreeText');
+        $blockTypeController->position = $post->get('position');
+        $blockTypeController->textColor = $post->get('textColor');
+        $blockTypeController->linkColor = $post->get('linkColor');
+        $blockTypeController->backgroundColor = $post->get('backgroundColor');
+        $blockTypeController->previewing = true;
+        $blockView = new BlockView($blockType);
+        ob_start();
+        $blockView->render('view');
+        $html = ob_get_contents();
+        ob_end_clean();
+        $html = '<script> $("head").append(' . json_encode(self::generateCss($blockTypeController)) . '); </script>' . $html;
+        $html = $this->generateCss($blockTypeController, $blockTypeController->bID, true). $html;
+
+        return $this->app->make(ResponseFactoryInterface::class)->json(['html' => $html]);
     }
 }

@@ -13,8 +13,10 @@
 @font-size: 12px;
 
 .pure-cookies-notice-wrapper {
-  position: fixed;
-  z-index: 1000;
+  &:not(.pure-cookies-notice-wrapper-preview) {
+    position: fixed;
+    z-index: 1000;
+  }
   background: @wrapper-background;
   color: @text-color;
 
