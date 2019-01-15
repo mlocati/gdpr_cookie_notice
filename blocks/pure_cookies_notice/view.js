@@ -12,18 +12,29 @@
         if (!options.gtmDataLayerName) {
             options.gtmDataLayerName = 'dataLayer';
         }
-        var notifyWrapper = this;
-        var cookieName = 'pureCookieNotify';
-        if (!options.sitewideCookie) {
-            cookieName += '_' + notifyWrapper.data('bid');
+        if (!options.cookie) {
+        	options.cookie = {};
         }
+        if (!options.cookie.name) {
+        	options.cookie.name = 'pureCookieNotify';
+        	if (!options.sitewideCookie) {
+        		options.cookie.name += '_' + notifyWrapper.data('bid');	
+        	}
+        }
+        if (!options.cookie.duration) {
+        	options.cookie.duration = parseInt(365.25 * 24 * 60 * 60); // 1 year
+        }
+        if (!options.cookie.path) {
+        	options.cookie.path = '/';
+        }
+        var notifyWrapper = this;
         var closeButton = notifyWrapper.find('.pure-cookies-notice-close-button');
 
         function hideNotify() {
             closeButton.off('click', hideNotify);
             $(window).off('click scroll', hideNotify);
-            var date = new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 31 * 12); //1 year
-            document.cookie = cookieName + '=read; path=/; expires=' + date.toUTCString();
+            var date = new Date(new Date().getTime() + 1000 * options.cookie.duration);
+            document.cookie = options.cookie.name + '=read; path=' + options.cookie.path + '; expires=' + date.toUTCString() + (options.cookie.domain ? '; domain=' + options.cookie.domain: '');
             if (options.postConsentGtmEventName) {
                 (window[options.gtmDataLayerName] = window[options.gtmDataLayerName] || []).push({'event': options.postConsentGtmEventName});
             }

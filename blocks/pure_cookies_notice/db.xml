@@ -6,6 +6,7 @@
 			<unsigned />
 			<key />
 		</field>
+		<field name="cookieName" type="string" size="255" />
 		<field name="title" type="string" size="255" />
 		<field name="content" type="text" />
 		<field name="agreeText" type="string" size="255" />

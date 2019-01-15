@@ -18,6 +18,7 @@
 /* @var string|null $postConsentGtmEventName */
 /* @var string|null $postConsentJavascriptFunction */
 /* @var string $gtmDataLayerName */
+/* @var array $cookie */
 
 defined('C5_EXECUTE') or die('Access Denied.');
 $c = Page::getCurrentPage();
@@ -74,6 +75,7 @@ if (empty($previewing) && $c->isEditMode()) {
                     'postConsentGtmEventName' => (string) $postConsentGtmEventName,
                     'postConsentJavascriptFunction' => (string) $postConsentJavascriptFunction,
                     'gtmDataLayerName' => (string) $gtmDataLayerName,
+                    'cookie' => $cookie,
                 ]) ?>);
             });
         </script>

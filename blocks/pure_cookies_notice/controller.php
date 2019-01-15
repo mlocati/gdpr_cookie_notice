@@ -28,6 +28,13 @@ defined('C5_EXECUTE') or die('Access Denied.');
 
 class Controller extends BlockController implements TrackableInterface, FileTrackableInterface
 {
+    /**
+     * @see https://tools.ietf.org/search/rfc6265#section-4.1.1
+     * @see https://tools.ietf.org/search/rfc2616#section-2.2
+     * @var string
+     */
+    const VALID_COOKIES_REGEX = '[\!\#\$%&\'\*\+\-\.0-9A-Z\^_`a-z\|~]{1,255}';
+
     protected $btTable = 'btPureCookiesNotice';
     protected $btDefaultSet = 'other';
     protected $btInterfaceWidth = 600;
@@ -39,6 +46,7 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
     protected $btSupportsInlineAdd = false;
     protected $btCacheBlockOutputLifetime = 0;
 
+    public $cookieName;
     public $title;
     public $content;
     public $agreeText = '';
@@ -176,6 +184,19 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
         return $result;
     }
 
+    private function getFinalCookieName()
+    {
+        $cookieName = (string) $this->cookieName;
+        if ($cookieName === '') {
+            $cookieName = $this->app->make('config')->get('pure_cookies_notice::cookie.defaultName');
+        }
+        if (empty($this->sitewideCookie)) {
+            $cookieName .= '_' . $this->bID;
+        }
+
+        return $cookieName;
+    }
+
     /**
      * Calculated result of shouldShowAgreement
      *
@@ -191,10 +212,7 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
     private function shouldShowAgreement()
     {
         if (!isset($this->shouldShowAgreementResult)) {
-            $cookieName = 'pureCookieNotify';
-            if (empty($this->sitewideCookie)) {
-                $cookieName .= '_' . $this->bID;
-            }
+            $cookieName = $this->getFinalCookieName();
             $cookie = $this->app->make('cookie');
             /* @var \Concrete\Core\Cookie\CookieJar $cookie */
             if ($cookie->get($cookieName)) {
@@ -256,6 +274,7 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
 
     public function add()
     {
+        $this->set('cookieName', '');
         $this->set('title', '');
         $this->set('agreeText', '');
         $this->set('position', 'bottom');
@@ -284,6 +303,7 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
             'top' => t('Top'),
             'bottom' => t('Bottom'),
         ]);
+        $this->set('defaultCookieName', $this->app->make('config')->get('pure_cookies_notice::cookie.defaultName'));
     }
 
     public function registerViewAssets($outputContent = '')
@@ -331,7 +351,20 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
             $this->set('postConsentReload', (bool) $this->postConsentReload);
             $this->set('postConsentGtmEventName', (string) $this->postConsentGtmEventName);
             $this->set('postConsentJavascriptFunction', (string) $this->postConsentJavascriptFunction);
-            $this->set('gtmDataLayerName', $this->app->make('config')->get('pure_cookies_notice::google_tag_manager.dataLayerName'));
+            if (!$this->previewing) {
+                $config = $this->app->make('config');
+                $this->set('gtmDataLayerName', $config->get('pure_cookies_notice::google_tag_manager.dataLayerName'));
+                $cookie = [
+                    'name' => $this->getFinalCookieName(),
+                    'duration' => (int) $config->get('pure_cookies_notice::cookie.duration'),
+                    'path' => (string) $config->get('pure_cookies_notice::cookie.path'),
+                    'domain' => (string) $config->get('pure_cookies_notice::cookie.domain'),
+                ];
+                if ($cookie['path'] === '') {
+                    $cookie['path'] = rtrim($this->app->make('app_relative_path'), '/') . '/';
+                }
+                $this->set('cookie', $cookie);
+            }
         } else {
             $this->set('read', true);
         }
@@ -352,6 +385,11 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
             $e->add(t('Field "%s" is invalid.', t('Custom Javascript function to call when accepted')), 'postConsentJavascriptFunction', t('Custom Javascript function to call when accepted'));
         }
 
+        $s = isset($data['cookieName']) ? trim($data['cookieName']) : ' ';
+        if ($s !== '' && !preg_match('/^' . self::VALID_COOKIES_REGEX . '$/i', $s)) {
+            $e->add(t('Field "%s" is invalid.', t('Custom cookie name')), 'cookieName', t('Custom cookie name'));
+        }
+
         return $e;
     }
 
@@ -359,6 +397,7 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
     {
         /** @var \Concrete\Core\Utility\Service\Text $th */
         $th = $this->app->make('helper/text');
+        $data['cookieName'] = isset($data['cookieName']) ? trim($data['cookieName']) : '';
         $data['title'] = $th->entities(trim($data['title']));
 
         $data['agreeText'] = $th->entities(trim($data['agreeText']));

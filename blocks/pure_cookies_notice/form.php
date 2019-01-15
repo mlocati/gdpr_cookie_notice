@@ -15,6 +15,7 @@ defined('C5_EXECUTE') or die('Access Denied.');
 /* @var Concrete\Core\Block\View\BlockView $this */
 /* @var Concrete\Core\Block\View\BlockView $view */
 
+/* @var string $cookieName */
 /* @var string $title */
 /* @var string $agreeText */
 /* @var string $textColor */
@@ -30,7 +31,7 @@ defined('C5_EXECUTE') or die('Access Denied.');
 /* @var bool|string $postConsentReload */
 /* @var string $postConsentGtmEventName */
 /* @var string $postConsentJavascriptFunction */
-
+/* @var string $defaultCookieName */
 ?>
 <div class="pure-cookies-notice-edit-container">
 
@@ -163,6 +164,12 @@ defined('C5_EXECUTE') or die('Access Denied.');
                     ['required' => 'required']
                 ) ?>
             </div>
+
+            <div class="form-group">
+                <?= $form->label('cookieName', t('Custom cookie name')) ?>
+                <?= $form->text('cookieName', $cookieName, ['placeholder' => $defaultCookieName, 'pattern' => str_replace('\\', '\\\\', $controller::VALID_COOKIES_REGEX)]) ?>
+            </div>
+
         </fieldset>
     </div>
 
