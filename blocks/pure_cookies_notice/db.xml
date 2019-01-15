@@ -22,7 +22,7 @@
 		<field name="onlyForEU" type="boolean">
 			<notnull />
 		</field>
-        <field name="preConsentGtmBlacklist" type="text" />
+		<field name="preConsentGtmBlacklist" type="text" />
 		<field name="postConsentReload" type="boolean">
 			<notnull />
 		</field>
