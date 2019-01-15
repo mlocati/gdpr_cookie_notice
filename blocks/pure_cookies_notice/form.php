@@ -26,12 +26,18 @@ defined('C5_EXECUTE') or die('Access Denied.');
 /* @var bool|string $onlyForEU */
 /* @var bool|string $interactionImpliesOk */
 /* @var bool|string $sitewideCookie */
+/* @var string $preConsentGtmBlacklist */
+/* @var bool|string $postConsentReload */
+/* @var string $postConsentGtmEventName */
+/* @var string $postConsentJavascriptFunction */
+
 ?>
 <div class="pure-cookies-notice-edit-container">
 
     <?= $ui->tabs([
         ['pure-cookies-notice-edit-basics', t('Basics'), true],
         ['pure-cookies-notice-edit-colors', t('Colors')],
+        ['pure-cookies-notice-edit-actions', t('Actions')],
         ['pure-cookies-notice-edit-advanced', t('Advanced')],
         ['pure-cookies-notice-edit-preview', t('Preview')],
     ]) ?>
@@ -77,6 +83,31 @@ defined('C5_EXECUTE') or die('Access Denied.');
                 <?= $form->label('backgroundColor', t('Background color')) ?>
                 <?php $color->output('backgroundColor', $backgroundColor, ['appendTo' => 'body', 'showAlpha' => true]) ?>
                 <div class="help-block"><?= t('Optional. Leave empty to use the default color from styles.') ?></div>
+            </div>
+        </fieldset>
+    </div>
+
+    <div class="ccm-tab-content" id="ccm-tab-content-pure-cookies-notice-edit-actions">
+        <fieldset>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <?= $form->checkbox('postConsentReload', '1', $postConsentReload); ?>
+                        <?= t('Reload page') ?>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <?= $form->label('preConsentGtmBlacklist', t('Google Tag Manager blacklisted tags when not accepted') . ' <a href="https://developers.google.com/tag-manager/devguide#restricting-tag-deployment" target="_blank"><i class="fa fa-info-circle"></i></a>') ?>
+                <?= $form->text('preConsentGtmBlacklist', $preConsentGtmBlacklist, ['placeholder' => t('Space-separated list. Optional')]) ?>
+            </div>
+            <div class="form-group">
+                <?= $form->label('postConsentGtmEventName', t('Google Tag Manager event to raise when accepted'), ['class' => 'launch-tooltip', 'title' => t('The event will be fired when the users already agreed or when they agree.')]) ?>
+                <?= $form->text('postConsentGtmEventName', $postConsentGtmEventName, ['placeholder' => t('Optional')]) ?>
+            </div>
+            <div class="form-group">
+                <?= $form->label('postConsentJavascriptFunction', t('Custom Javascript function to call when accepted'), ['class' => 'launch-tooltip', 'title' => t('The function will be called when the users already agreed or when they agree.')]) ?>
+                <?= $form->text('postConsentJavascriptFunction', $postConsentJavascriptFunction, ['placeholder' => t('Only the function name. Optional.'), 'pattern' => '[$a-zA-Z_][$a-zA-Z_0-9]*']) ?>
             </div>
         </fieldset>
     </div>
@@ -166,6 +197,6 @@ defined('C5_EXECUTE') or die('Access Denied.');
                     $preview.html(data.html);
                 }
             });
-        }); 
+        });
     });
 </script>

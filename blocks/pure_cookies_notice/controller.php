@@ -22,6 +22,7 @@ use Concrete\Core\Error\UserMessageException;
 use Doctrine\ORM\EntityManagerInterface;
 use Concrete\Core\Entity\Block\BlockType\BlockType;
 use Concrete\Core\Block\View\BlockView;
+use Concrete\Core\Asset\JavascriptInlineAsset;
 
 defined('C5_EXECUTE') or die('Access Denied.');
 
@@ -48,6 +49,10 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
     public $interactionImpliesOk;
     public $sitewideCookie;
     public $onlyForEU;
+    public $preConsentGtmBlacklist;
+    public $postConsentReload;
+    public $postConsentGtmEventName;
+    public $postConsentJavascriptFunction;
     private $previewing = false;
 
     /**
@@ -261,6 +266,10 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
         $this->set('onlyForEU', false);
         $this->set('interactionImpliesOk', false);
         $this->set('sitewideCookie', true);
+        $this->set('preConsentGtmBlacklist', '');
+        $this->set('postConsentReload', false);
+        $this->set('postConsentGtmEventName', '');
+        $this->set('postConsentJavascriptFunction', '');
         $this->edit();
     }
 
@@ -277,6 +286,38 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
         ]);
     }
 
+    public function registerViewAssets($outputContent = '')
+    {
+        if ($this->previewing === false) {
+            if ($this->shouldShowAgreement()) {
+                if ((string) $this->preConsentGtmBlacklist !== '') {
+                    $jsGTMDataLayerName = json_encode($this->app->make('config')->get('pure_cookies_notice::google_tag_manager.dataLayerName'));
+                    $jsBlacklist = json_encode(['gtm.blacklist' => explode(' ', $this->preConsentGtmBlacklist)]);
+                    $asset = new JavascriptInlineAsset();
+                    $asset->setAssetPosition(JavascriptInlineAsset::ASSET_POSITION_HEADER);
+                    $asset->setAssetURL("(window[{$jsGTMDataLayerName}]=window[{$jsGTMDataLayerName}]||[]).push({$jsBlacklist});");
+                    $this->requireAsset($asset);
+                }
+            } else {
+                if ((string) $this->postConsentGtmEventName !== '') {
+                    $jsGTMDataLayerName = json_encode($this->app->make('config')->get('pure_cookies_notice::google_tag_manager.dataLayerName'));
+                    $jsEvent = json_encode(['event' => $this->postConsentGtmEventName]);
+                    $asset = new JavascriptInlineAsset();
+                    $asset->setAssetPosition(JavascriptInlineAsset::ASSET_POSITION_HEADER);
+                    $asset->setAssetURL("(window[{$jsGTMDataLayerName}]=window[{$jsGTMDataLayerName}]||[]).push({$jsEvent});");
+                    $this->requireAsset($asset);
+                }
+                if ((string) $this->postConsentJavascriptFunction !== '') {
+                    $jsFunction = json_encode($this->postConsentJavascriptFunction);
+                    $asset = new JavascriptInlineAsset();
+                    $asset->setAssetPosition(JavascriptInlineAsset::ASSET_POSITION_FOOTER);
+                    $asset->setAssetURL("if(window[{$jsFunction}])window[{$jsFunction}]();");
+                    $this->requireAsset($asset);
+                }
+            }
+        }
+    }
+
     public function view()
     {
         $this->set('previewing', $this->previewing);
@@ -287,6 +328,10 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
             $this->set('content', $this->getContent());
             $this->set('agreeText', $this->agreeText);
             $this->set('position', $this->position);
+            $this->set('postConsentReload', (bool) $this->postConsentReload);
+            $this->set('postConsentGtmEventName', (string) $this->postConsentGtmEventName);
+            $this->set('postConsentJavascriptFunction', (string) $this->postConsentJavascriptFunction);
+            $this->set('gtmDataLayerName', $this->app->make('config')->get('pure_cookies_notice::google_tag_manager.dataLayerName'));
         } else {
             $this->set('read', true);
         }
@@ -297,10 +342,14 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
         $e = $this->app->make('error');
 
         if (empty($data['content'])) {
-            $e->add(t('Field "Content" is required'));
+            $e->add(t('Field "%s" is required.', t('Content')), 'content', t('Content'));
         }
         if (empty($data['position'])) {
-            $e->add(t('Field "Position" is required'));
+            $e->add(t('Field "%s" is required.', t('Position')), 'position', t('Position'));
+        }
+        $s = isset($data['postConsentJavascriptFunction']) ? trim($data['postConsentJavascriptFunction']) : ' ';
+        if ($s !== '' && !preg_match('/^[$a-zA-Z_][$a-zA-Z_0-9]*$/i', $s)) {
+            $e->add(t('Field "%s" is invalid.', t('Custom Javascript function to call when accepted')), 'postConsentJavascriptFunction', t('Custom Javascript function to call when accepted'));
         }
 
         return $e;
@@ -321,6 +370,10 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
         $data['interactionImpliesOk'] = empty($data['interactionImpliesOk']) ? 0 : 1;
         $data['sitewideCookie'] = empty($data['sitewideCookie']) ? 0 : 1;
         $data['onlyForEU'] = empty($data['onlyForEU']) ? 0 : 1;
+        $data['preConsentGtmBlacklist'] = isset($data['preConsentGtmBlacklist']) ? trim(preg_replace('/\s+/', ' ', $data['preConsentGtmBlacklist'])) : '';
+        $data['postConsentReload'] = empty($data['postConsentReload']) ? 0 : 1;
+        $data['postConsentGtmEventName'] = isset($data['postConsentGtmEventName']) ? trim($data['postConsentGtmEventName']) : '';
+        $data['postConsentJavascriptFunction'] = isset($data['postConsentJavascriptFunction']) ? trim($data['postConsentJavascriptFunction']) : '';
 
         parent::save($data);
         $this->tracker->track($this);

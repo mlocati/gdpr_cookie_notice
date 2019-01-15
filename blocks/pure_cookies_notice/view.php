@@ -5,6 +5,20 @@
  * www.pure-web.ru
  * © 2017.
  */
+/* @var bool $previewing */
+/* @var bool $read */
+/* @var int|string $bID */
+/* @var string $title */
+/* @var string $content */
+/* @var string $agreeText */
+/* @var string $position */
+/* @var bool|string $sitewideCookie */
+/* @var bool|string $interactionImpliesOk */
+/* @var bool|string $postConsentReload */
+/* @var string|null $postConsentGtmEventName */
+/* @var string|null $postConsentJavascriptFunction */
+/* @var string $gtmDataLayerName */
+
 defined('C5_EXECUTE') or die('Access Denied.');
 $c = Page::getCurrentPage();
 if (empty($previewing) && $c->isEditMode()) {
@@ -56,6 +70,10 @@ if (empty($previewing) && $c->isEditMode()) {
                 $('#pure-cookies-notice-<?php echo $bID ?>').pureCookiesNotify(<?php echo json_encode([
                     'sitewideCookie' => !empty($sitewideCookie),
                     'interactionImpliesOk' => !empty($interactionImpliesOk),
+                    'postConsentReload' => !empty($postConsentReload),
+                    'postConsentGtmEventName' => (string) $postConsentGtmEventName,
+                    'postConsentJavascriptFunction' => (string) $postConsentJavascriptFunction,
+                    'gtmDataLayerName' => (string) $gtmDataLayerName,
                 ]) ?>);
             });
         </script>

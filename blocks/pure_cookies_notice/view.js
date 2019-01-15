@@ -9,6 +9,9 @@
         if (!options) {
             options = {};
         }
+        if (!options.gtmDataLayerName) {
+            options.gtmDataLayerName = 'dataLayer';
+        }
         var notifyWrapper = this;
         var cookieName = 'pureCookieNotify';
         if (!options.sitewideCookie) {
@@ -19,14 +22,25 @@
         function hideNotify() {
             closeButton.off('click', hideNotify);
             $(window).off('click scroll', hideNotify);
-            notifyWrapper.animate({
-                    height: '0'
-                }, 600, function () {
-                    notifyWrapper.remove();
-                    var date = new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 31 * 12); //1 year
-                    document.cookie = cookieName+'=read; path=/; expires=' + date.toUTCString();
-                }
-            );
+            var date = new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 31 * 12); //1 year
+            document.cookie = cookieName + '=read; path=/; expires=' + date.toUTCString();
+            if (options.postConsentGtmEventName) {
+                (window[options.gtmDataLayerName] = window[options.gtmDataLayerName] || []).push({'event': options.postConsentGtmEventName});
+            }
+            if (options.postConsentJavascriptFunction && window[options.postConsentJavascriptFunction]) {
+                window[options.postConsentJavascriptFunction]();
+            }
+            if (options.postConsentReload) {
+                window.location.reload();
+            } else {
+                notifyWrapper.animate(
+                    {height: '0'},
+                    600,
+                    function () {
+                        notifyWrapper.remove();
+                    }
+                );
+            }
         }
         closeButton.on('click', hideNotify);
         if (options.interactionImpliesOk) {
