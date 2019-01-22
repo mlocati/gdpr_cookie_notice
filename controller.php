@@ -1,58 +1,59 @@
-<?php 
-/**
- * Pure/CookiesNotice
- * Author: Vladimir S. <guyasyou@gmail.com>
- * www.pure-web.ru
- * © 2017.
- */
-namespace Concrete\Package\PureCookiesNotice;
+<?php
 
-use Concrete\Core\Block\BlockType\BlockType;
-use Concrete\Core\Package\Package as PackageInstaller;
+namespace Concrete\Package\GdprCookieNotice;
+
+use Concrete\Core\Backup\ContentImporter;
+use Concrete\Core\Package\Package;
 
 defined('C5_EXECUTE') or die('Access Denied.');
 
-class Controller extends PackageInstaller
+class Controller extends Package
 {
-    protected $pkgHandle = 'pure_cookies_notice';
-    protected $appVersionRequired = '8.1';
-    protected $pkgVersion = '1.3.4';
+    protected $pkgHandle = 'gdpr_cookie_notice';
 
+    /**
+     * {@inheritdoc}
+     *
+     * @see \Concrete\Core\Package\Package::$appVersionRequired
+     */
+    protected $appVersionRequired = '8.3.0';
+
+    protected $pkgVersion = '1.0.0';
+
+    /**
+     * {@inheritdoc}
+     *
+     * @see \Concrete\Core\Package\Package::getPackageName()
+     */
     public function getPackageName()
     {
-        return t('Cookies Notice');
+        return t('GDPR Cookie Notice');
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @see \Concrete\Core\Package\Package::getPackageDescription()
+     */
     public function getPackageDescription()
     {
-        return t('Customizable notifications of users for anything, including the use of cookies (The Cookie Law Explained).');
+        return t('This package provides a block type to display a cookie-based notice.');
     }
 
-    public function on_start()
-    {
-        //*******************************************
-        //Assets
-        $al = \Concrete\Core\Asset\AssetList::getInstance();
-
-        //CSS
-        $al->register(
-            'css', //asset type
-            'pure_cookies_notice/edit', //asset name
-            'blocks/pure_cookies_notice/form.css', //path
-            [],
-            'pure_cookies_notice' //from package
-        );
-        //********************
-    }
-
+    /**
+     * {@inheritdoc}
+     *
+     * @see \Concrete\Core\Package\Package::install()
+     */
     public function install()
     {
-        /** @var $pkg \Concrete\Core\Entity\Package() */
-        $pkg = parent::install();
+        parent::install();
+        $this->installXml();
+    }
 
-        $blockType = BlockType::getByHandle($this->pkgHandle);
-        if (!is_object($blockType)) {
-            BlockType::installBlockType($this->pkgHandle, $pkg);
-        }
+    private function installXml()
+    {
+        $contentImporter = $this->app->make(ContentImporter::class);
+        $contentImporter->importContentFile($this->getPackagePath() . '/config/install.xml');
     }
 }

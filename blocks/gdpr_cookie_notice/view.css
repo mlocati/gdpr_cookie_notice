@@ -1,0 +1,46 @@
+.gdpr_cookie_notice {
+  z-index: 1000;
+}
+.gdpr_cookie_notice.gdpr_cookie_notice-position-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+.gdpr_cookie_notice.gdpr_cookie_notice-position-top.gdpr_cookie_notice-withtoolbar {
+  top: 48px;
+}
+.gdpr_cookie_notice.gdpr_cookie_notice-position-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.gdpr_cookie_notice .gdpr_cookie_notice-container {
+  max-width: 990px;
+  padding: 12px;
+  margin: 0 auto;
+}
+.gdpr_cookie_notice .gdpr_cookie_notice-title {
+  font-size: 14.4px;
+}
+.gdpr_cookie_notice .gdpr_cookie_notice-content {
+  font-size: 12px;
+}
+.gdpr_cookie_notice .gdpr_cookie_notice-content a {
+  text-decoration: underline;
+}
+.gdpr_cookie_notice .gdpr_cookie_notice-close {
+  font-size: 14px;
+  display: inline-block;
+  padding: 4px 14px;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 5px;
+}
+.gdpr_cookie_notice .gdpr_cookie_notice-close:hover {
+  cursor: pointer;
+}
+.gdpr_cookie_notice .gdpr_cookie_notice-clearfix {
+  clear: both;
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<concrete5-cif version="1.0">
+
+    <blocktypes>
+        <blocktype package="gdpr_cookie_notice" handle="gdpr_cookie_notice" />
+    </blocktypes>
+
+</concrete5-cif>
