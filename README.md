@@ -23,3 +23,5 @@ This [concrete5](https://www.concrete5.org/) package allows users to display a C
 ## Credits
 
 This package has been derived from the [Pure Cookies Notice](https://github.com/guyasyou/Pure-Cookies-Notice) package by [@guyasyou](https://github.com/guyasyou).
+
+See [here](https://github.com/guyasyou/Pure-Cookies-Notice/pull/11#issuecomment-455673937) and [here](https://raw.githubusercontent.com/mlocati/gdpr_cookie_notice/assets/images/license-history.png).
