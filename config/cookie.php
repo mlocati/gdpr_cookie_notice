@@ -1,4 +1,5 @@
 <?php
+
 return [
     // The name of the cookie to be used when it's not specified by users
     'defaultName' => 'gdpr-cookie-notice',

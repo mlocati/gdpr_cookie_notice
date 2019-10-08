@@ -2,7 +2,6 @@
 
 namespace Concrete\Package\GdprCookieNotice;
 
-use Concrete\Core\Backup\ContentImporter;
 use Concrete\Core\Package\Package;
 
 defined('C5_EXECUTE') or die('Access Denied.');
@@ -51,9 +50,19 @@ class Controller extends Package
         $this->installXml();
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @see \Concrete\Core\Package\Package::upgrade()
+     */
+    public function upgrade()
+    {
+        parent::upgrade();
+        $this->installXml();
+    }
+
     private function installXml()
     {
-        $contentImporter = $this->app->make(ContentImporter::class);
-        $contentImporter->importContentFile($this->getPackagePath() . '/config/install.xml');
+        $this->installContentFile('config/install.xml');
     }
 }

@@ -9,6 +9,7 @@ use Concrete\Core\Editor\LinkAbstractor;
 use Concrete\Core\Entity\Block\BlockType\BlockType;
 use Concrete\Core\Error\UserMessageException;
 use Concrete\Core\File\Tracker\FileTrackableInterface;
+use Concrete\Core\Filesystem\FileLocator;
 use Concrete\Core\Geolocator\GeolocationResult;
 use Concrete\Core\Http\ResponseFactoryInterface;
 use Concrete\Core\Session\SessionValidatorInterface;
@@ -17,7 +18,6 @@ use Concrete\Core\Statistics\UsageTracker\TrackableInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Punic\Territory;
-use Concrete\Core\Filesystem\FileLocator;
 
 defined('C5_EXECUTE') or die('Access Denied.');
 
@@ -485,8 +485,7 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
         }
         if ($normalized['content'] === '') {
             $e->add(t('The field "%s" is required.', t('Content')), 'content', t('Content'));
-        }
-        else {
+        } else {
             $normalized['content'] = LinkAbstractor::translateTo($normalized['content']);
         }
         if (mb_strlen($data['agreeText']) > 255) {
@@ -577,6 +576,7 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
 
     /**
      * @param Controller|null $controller
+     * @param bool $includeDefault
      *
      * @return string
      */
@@ -606,7 +606,7 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
                 $default = $locator->getFilesystem()->get($record->getFile());
             }
         }
-        
+
         return <<<EOT
 {$default}
 #gdpr_cookie_notice-{$controller->bID} {

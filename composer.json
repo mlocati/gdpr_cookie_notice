@@ -1,30 +1,33 @@
 {
-	"name" : "mlocati-concrete5-packages/gdpr_cookie_notice",
-	"description" : "A concrete5 package to display a cookie-based notice (useful for GDPR purposes)",
-	"type" : "concrete5-package",
-	"license" : "MIT",
-	"homepage" : "https://github.com/mlocati/gdpr_cookie_notice",
-	"authors" : [{
-			"name" : "Michele Locati",
-			"email" : "michele@locati.it",
-			"homepage" : "https://mlocati.github.io",
-			"role" : "Author"
-		}, {
-			"name" : "Vladimir S.",
-			"email" : "guyasyou@gmail.com",
-			"homepage" : "https://www.pure-web.ru/",
-			"role" : "Original author"
-		}
-	],
-	"support" : {
-		"issues" : "https://github.com/mlocati/gdpr_cookie_notice/issues",
-		"source" : "https://github.com/mlocati/gdpr_cookie_notice"
-	},
-	"keywords" : [
-		"concrete5",
-		"package",
-		"gdpr",
-		"cookie",
-		"consent"
-	]
+    "name": "mlocati-concrete5-packages/gdpr_cookie_notice",
+    "description": "A concrete5 package to display a cookie-based notice (useful for GDPR purposes)",
+    "type": "concrete5-package",
+    "license": "MIT",
+    "homepage": "https://github.com/mlocati/gdpr_cookie_notice",
+    "authors": [
+        {
+            "name": "Michele Locati",
+            "email": "michele@locati.it",
+            "homepage": "https://mlocati.github.io",
+            "role": "Author"
+        },
+        {
+            "name": "Vladimir S.",
+            "email": "guyasyou@gmail.com",
+            "homepage": "https://www.pure-web.ru/",
+            "role": "Original author"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/mlocati/gdpr_cookie_notice/issues",
+        "source": "https://github.com/mlocati/gdpr_cookie_notice"
+    },
+    "keywords": [
+        "concrete5",
+        "package",
+        "gdpr",
+        "cookie",
+        "consent",
+        "tag manager"
+    ]
 }

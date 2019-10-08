@@ -168,7 +168,7 @@ defined('C5_EXECUTE') or die('Access Denied.');
                 dataType: 'json',
                 success: function(data) {
                     if ($css.length === 0) {
-                    	$('head').append($css = $('<style id="gdpr_cookie_notice-preview-style" />'));
+                        $('head').append($css = $('<style id="gdpr_cookie_notice-preview-style" />'));
                     }
                     $css.html(data.css);
                     $preview.html(data.html);
