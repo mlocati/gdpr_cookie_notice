@@ -138,7 +138,6 @@ defined('C5_EXECUTE') or die('Access Denied.');
 </div>
 
 <div class="ccm-tab-content" id="ccm-tab-content-gdpr_cookie_notice-edit-preview">
-    <div id="ccm-tab-content-gdpr_cookie_notice-edit-preview-view"></div>
 </div>
 
 <script>
