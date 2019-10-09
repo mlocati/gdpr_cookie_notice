@@ -16,7 +16,6 @@ use Concrete\Core\Session\SessionValidatorInterface;
 use Concrete\Core\Statistics\UsageTracker\AggregateTracker;
 use Concrete\Core\Statistics\UsageTracker\TrackableInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Punic\Territory;
 
 defined('C5_EXECUTE') or die('Access Denied.');
@@ -420,10 +419,7 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
     {
         $token = $this->app->make('token');
         if (!$token->validate('gdpr_cookie_notice-preview')) {
-            if (class_exists(UserMessageException::class)) {
-                throw new UserMessageException($token->getErrorMessage());
-            }
-            throw new Exception($token->getErrorMessage());
+            throw new UserMessageException($token->getErrorMessage());
         }
         $em = $this->app->make(EntityManagerInterface::class);
         if (method_exists($this, 'getBlockTypeID')) {
