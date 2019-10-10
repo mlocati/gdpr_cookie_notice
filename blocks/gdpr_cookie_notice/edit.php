@@ -132,8 +132,8 @@ defined('C5_EXECUTE') or die('Access Denied.');
     </div>
 
     <div class="form-group">
-        <?= $form->label('cookieName', t('Custom cookie name')) ?>
-        <?= $form->text('cookieName', $cookieName, ['placeholder' => $defaultCookieName, 'pattern' => str_replace('\\', '\\\\', $validCookiesRegex)]) ?>
+        <?= $form->label('cookieName', t('Custom cookie name'), ['class' => 'launch-tooltip', 'title' => t('Valid cookie names include letters, digits, and some special characters (like dashes, underscores, and a few others).')]) ?>
+        <?= $form->text('cookieName', $cookieName, ['placeholder' => $defaultCookieName, 'pattern' => h($validCookiesRegex)]) ?>
     </div>
 </div>
 

@@ -44,7 +44,7 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
      *
      * @var string
      */
-    const VALID_COOKIES_REGEX = '[\!\#\$%&\'\*\+\-\.0-9A-Z\^_`a-z\|~]{0,255}';
+    const VALID_COOKIES_REGEX = '[A-Za-z0-9!#$%&\'*+-.^_`|~]{0,255}';
 
     /**
      * @var string
@@ -490,7 +490,7 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
         if (!in_array($normalized['position'], [self::POSITION_TOP, self::POSITION_BOTTOM], true)) {
             $e->add(t('Please specify a valid value for the "%s" field.', t('Position')), 'position', t('Position'));
         }
-        if (!preg_match('/^' . self::VALID_COOKIES_REGEX . '$/i', $data['cookieName'])) {
+        if (!preg_match('/^' . self::VALID_COOKIES_REGEX . '$/', $data['cookieName'])) {
             $e->add(t('Please specify a valid value for the "%s" field.', t('Custom cookie name')), 'cookieName', t('Custom cookie name'));
         }
 
