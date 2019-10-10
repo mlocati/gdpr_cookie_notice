@@ -5,6 +5,7 @@ namespace Concrete\Package\GdprCookieNotice\Block\GdprCookieNotice;
 use Concrete\Core\Asset\JavascriptInlineAsset;
 use Concrete\Core\Block\BlockController;
 use Concrete\Core\Block\View\BlockView;
+use Concrete\Core\Cookie\CookieJar;
 use Concrete\Core\Editor\LinkAbstractor;
 use Concrete\Core\Entity\Block\BlockType\BlockType;
 use Concrete\Core\Error\UserMessageException;
@@ -407,6 +408,8 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
         }
         parent::save($data);
         $this->tracker->track($this);
+        $this->cookieName = $data['cookieName'];
+        $this->app->make(CookieJar::class)->clear($this->getCookieName());
     }
 
     public function delete()
