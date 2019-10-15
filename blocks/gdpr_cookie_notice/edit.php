@@ -110,8 +110,8 @@ defined('C5_EXECUTE') or die('Access Denied.');
         <?= $form->select(
             'onlyForEU',
             [
-                '1' => t('Show only for site visitors from the European Union'),
                 '0' => t('Show for every site visitor'),
+                '1' => t('Show only for site visitors from the European Union'),
             ],
             $onlyForEU ? '1' : '0',
             ['required' => 'required']
