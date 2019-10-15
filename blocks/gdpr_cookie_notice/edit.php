@@ -126,7 +126,7 @@ defined('C5_EXECUTE') or die('Access Denied.');
                 '0' => t('Close on click button only'),
                 '1' => t('Close on any clicks (anywhere) and scrolls'),
             ],
-            empty($interactionImpliesOk) ? '0' : '1',
+            $interactionImpliesOk ? '1' : '0',
             ['required' => 'required']
         ) ?>
     </div>
