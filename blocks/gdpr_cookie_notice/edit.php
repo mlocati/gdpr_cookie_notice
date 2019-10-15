@@ -119,7 +119,7 @@ defined('C5_EXECUTE') or die('Access Denied.');
     </div>
 
     <div class="form-group">
-        <?= $form->label('interactionImpliesOk', t('Closing triggers')) ?>
+        <?= $form->label('interactionImpliesOk', t('Closing and agreement triggers'), ['class' => 'launch-tooltip', 'data-html' => 'true', 'title' => t("In some countries, any page interaction implies acceptance of the privacy policy (it's called %1\$s); if unsure, select the %2\$s option", '<i>soft opt-in</i>', '<b>' . t('Close on click button only') . '</b>')]) ?>
         <?= $form->select(
             'interactionImpliesOk',
             [
