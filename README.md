@@ -1,3 +1,5 @@
+[![Tests](https://github.com/mlocati/gdpr_cookie_notice/actions/workflows/tests.yml/badge.svg)](https://github.com/mlocati/gdpr_cookie_notice/actions/workflows/tests.yml)
+
 # GDPR Cookie Notice
 
 This [concrete5](https://www.concrete5.org/) package allows users to display a Cookies Notice (useful for GDPR purposes).
