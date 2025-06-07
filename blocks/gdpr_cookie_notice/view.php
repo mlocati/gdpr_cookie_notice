@@ -1,24 +1,28 @@
 <?php
 defined('C5_EXECUTE') or die('Access Denied.');
 
+use Concrete\Core\Localization\Localization;
+use Concrete\Core\Page\Page;
 use Concrete\Core\Permission\Checker;
 
-/* @var bool $previewing */
-/* @var bool $read */
-
-// When $read is false
-/* @var int|string $bID */
-/* @var string $title */
-/* @var string $content */
-/* @var string $agreeText */
-/* @var string $position */
-
-// When $read is false and $previewing is false
-/* @var bool $postConsentReload */
-/* @var string $postConsentJavascriptFunction */
-/* @var bool $interactionImpliesOk */
-/* @var array $gtm */
-/* @var array $cookie */
+/**
+ * @var bool $previewing
+ * @var bool $read
+ * 
+ * When $read is false
+ * @var int|string $bID
+ * @var string $title
+ * @var string $content
+ * @var string $agreeText
+ * @var string $position
+ * 
+ * When $read is false and $previewing is false
+ * @var bool $postConsentReload
+ * @var string $postConsentJavascriptFunction
+ * @var bool $interactionImpliesOk
+ * @var array $gtm
+ * @var array $cookie
+ */
 
 $c = Page::getCurrentPage();
 

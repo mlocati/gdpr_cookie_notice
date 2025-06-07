@@ -82,14 +82,14 @@ class Controller extends BlockController implements FileTrackableInterface
      *
      * @see \Concrete\Core\Block\BlockController::$btInterfaceWidth
      */
-    protected $btInterfaceWidth = 600;
+    protected $btInterfaceWidth = 650;
 
     /**
      * {@inheritdoc}
      *
      * @see \Concrete\Core\Block\BlockController::$btInterfaceHeight
      */
-    protected $btInterfaceHeight = 465;
+    protected $btInterfaceHeight = 550;
 
     /**
      * {@inheritdoc}

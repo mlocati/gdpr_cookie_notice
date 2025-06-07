@@ -1,6 +1,6 @@
 {
     "name": "mlocati-concrete5-packages/gdpr_cookie_notice",
-    "description": "A concrete5 package to display a cookie-based notice (useful for GDPR purposes)",
+    "description": "A ConcreteCMS/concrete5 package to display a cookie-based notice (useful for GDPR purposes)",
     "type": "concrete5-package",
     "license": "MIT",
     "homepage": "https://github.com/mlocati/gdpr_cookie_notice",
@@ -23,6 +23,8 @@
         "source": "https://github.com/mlocati/gdpr_cookie_notice"
     },
     "keywords": [
+        "concretecms",
+        "concrete",
         "concrete5",
         "package",
         "gdpr",
