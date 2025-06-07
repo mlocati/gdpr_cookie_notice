@@ -64,76 +64,6 @@ class Controller extends BlockController implements FileTrackableInterface
     /**
      * @var string
      */
-    public $title;
-
-    /**
-     * @var string
-     */
-    public $content;
-
-    /**
-     * @var string
-     */
-    public $agreeText;
-
-    /**
-     * @var string
-     */
-    public $textColor;
-
-    /**
-     * @var string
-     */
-    public $linkColor;
-
-    /**
-     * @var string
-     */
-    public $backgroundColor;
-
-    /**
-     * @var bool|string
-     */
-    public $postConsentReload;
-
-    /**
-     * @var string
-     */
-    public $preConsentGtmBlacklist;
-
-    /**
-     * @var string
-     */
-    public $postConsentGtmEventName;
-
-    /**
-     * @var string
-     */
-    public $postConsentJavascriptFunction;
-
-    /**
-     * @var string
-     */
-    public $position;
-
-    /**
-     * @var bool|string
-     */
-    public $onlyForEU;
-
-    /**
-     * @var bool|string
-     */
-    public $interactionImpliesOk;
-
-    /**
-     * @var string
-     */
-    public $cookieName;
-
-    /**
-     * @var string
-     */
     protected $btTable = 'btGdprCookieNotice';
 
     /**
@@ -180,6 +110,76 @@ class Controller extends BlockController implements FileTrackableInterface
      * @var bool
      */
     protected $supportSavingNullValues = true;
+
+    /**
+     * @var string
+     */
+    protected $title;
+
+    /**
+     * @var string
+     */
+    protected $content;
+
+    /**
+     * @var string
+     */
+    protected $agreeText;
+
+    /**
+     * @var string
+     */
+    protected $textColor;
+
+    /**
+     * @var string
+     */
+    protected $linkColor;
+
+    /**
+     * @var string
+     */
+    protected $backgroundColor;
+
+    /**
+     * @var bool|string
+     */
+    protected $postConsentReload;
+
+    /**
+     * @var string
+     */
+    protected $preConsentGtmBlacklist;
+
+    /**
+     * @var string
+     */
+    protected $postConsentGtmEventName;
+
+    /**
+     * @var string
+     */
+    protected $postConsentJavascriptFunction;
+
+    /**
+     * @var string
+     */
+    protected $position;
+
+    /**
+     * @var bool|string
+     */
+    protected $onlyForEU;
+
+    /**
+     * @var bool|string
+     */
+    protected $interactionImpliesOk;
+
+    /**
+     * @var string
+     */
+    protected $cookieName;
 
     /**
      * @var \Concrete\Core\Statistics\UsageTracker\AggregateTracker|null
