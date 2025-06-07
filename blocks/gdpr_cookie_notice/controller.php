@@ -15,8 +15,10 @@ use Concrete\Core\Geolocator\GeolocationResult;
 use Concrete\Core\Http\ResponseFactoryInterface;
 use Concrete\Core\Session\SessionValidatorInterface;
 use Concrete\Core\Statistics\UsageTracker\AggregateTracker;
+use Concrete\Core\Utility\Service\Xml;
 use Doctrine\ORM\EntityManagerInterface;
 use Punic\Territory;
+use SimpleXMLElement;
 
 defined('C5_EXECUTE') or die('Access Denied.');
 
@@ -62,54 +64,60 @@ class Controller extends BlockController implements FileTrackableInterface
     const DEFAULT_BACKGROUND_COLOR = 'rgba(0, 40, 136, 0.8)';
 
     /**
-     * @var string
+     * {@inheritdoc}
+     *
+     * @see \Concrete\Core\Block\BlockController::$btTable
      */
     protected $btTable = 'btGdprCookieNotice';
 
     /**
-     * @var string
+     * {@inheritdoc}
+     *
+     * @see \Concrete\Core\Block\BlockController::$btDefaultSet
      */
     protected $btDefaultSet = 'other';
 
     /**
-     * @var int
+     * {@inheritdoc}
+     *
+     * @see \Concrete\Core\Block\BlockController::$btInterfaceWidth
      */
     protected $btInterfaceWidth = 600;
 
     /**
-     * @var int
+     * {@inheritdoc}
+     *
+     * @see \Concrete\Core\Block\BlockController::$btInterfaceHeight
      */
     protected $btInterfaceHeight = 465;
 
     /**
-     * @var bool
+     * {@inheritdoc}
+     *
+     * @see \Concrete\Core\Block\BlockController::$btCacheBlockRecord
      */
     protected $btCacheBlockRecord = true;
 
     /**
-     * @var bool
+     * {@inheritdoc}
+     *
+     * @see \Concrete\Core\Block\BlockController::$btCacheBlockOutput
      */
     protected $btCacheBlockOutput = false;
 
     /**
-     * @var bool
-     */
-    protected $btCacheBlockOutputOnPost = true;
-
-    /**
-     * @var bool
-     */
-    protected $btSupportsInlineEdit = false;
-
-    /**
-     * @var bool
-     */
-    protected $btSupportsInlineAdd = false;
-
-    /**
-     * @var bool
+     * {@inheritdoc}
+     *
+     * @see \Concrete\Core\Block\BlockController::$supportSavingNullValues
      */
     protected $supportSavingNullValues = true;
+
+    /**
+     * {@inheritdoc}
+     *
+     * @see \Concrete\Core\Block\BlockController::$btExportContentColumns
+     */
+    protected $btExportContentColumns = ['content'];
 
     /**
      * @var string
@@ -439,6 +447,48 @@ class Controller extends BlockController implements FileTrackableInterface
         ob_end_clean();
 
         return $this->app->make(ResponseFactoryInterface::class)->json(['css' => $css, 'html' => $html]);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @see \Concrete\Core\Block\BlockController::export()
+     */
+    public function export(SimpleXMLElement $blockNode)
+    {
+        parent::export($blockNode);
+        if (version_compare(APP_VERSION, '9.4.0') < 0) {
+            $content = (string) $blockNode->data->record->content;
+            if ($content !== '') {
+                $contentFixed = LinkAbstractor::export($content);
+                if ($contentFixed !== $content) {
+                    unset($blockNode->data->record->content);
+                    $xmlService = $this->app->make(Xml::class);
+                    if (method_exists($xmlService, 'createChildElement')) {
+                        $xmlService->createChildElement($blockNode->data->record, 'content', $contentFixed);
+                    } else {
+                        $xmlService->createCDataNode($blockNode->data->record, 'content', $contentFixed);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @see \Concrete\Core\Block\BlockController::getImportData()
+     */
+    protected function getImportData($blockNode, $page)
+    {
+        $args = parent::getImportData($blockNode, $page);
+        if (version_compare(APP_VERSION, '9.2.1') < 0) {
+            if (isset($blockNode->data->record->content)) {
+                $args['content'] = LinkAbstractor::import((string) $blockNode->data->record->content);
+            }
+        }
+
+        return $args;
     }
 
     /**
