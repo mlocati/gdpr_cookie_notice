@@ -15,13 +15,12 @@ use Concrete\Core\Geolocator\GeolocationResult;
 use Concrete\Core\Http\ResponseFactoryInterface;
 use Concrete\Core\Session\SessionValidatorInterface;
 use Concrete\Core\Statistics\UsageTracker\AggregateTracker;
-use Concrete\Core\Statistics\UsageTracker\TrackableInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Punic\Territory;
 
 defined('C5_EXECUTE') or die('Access Denied.');
 
-class Controller extends BlockController implements TrackableInterface, FileTrackableInterface
+class Controller extends BlockController implements FileTrackableInterface
 {
     /**
      * Notice position: top.
@@ -183,9 +182,9 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
     protected $supportSavingNullValues = true;
 
     /**
-     * @var \Concrete\Core\Statistics\UsageTracker\AggregateTracker
+     * @var \Concrete\Core\Statistics\UsageTracker\AggregateTracker|null
      */
-    protected $tracker;
+    private $tracker;
 
     /**
      * @var bool
@@ -201,16 +200,6 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
      * @var bool|null
      */
     private $isVisitorFromEU;
-
-    /**
-     * @param mixed $obj
-     * @param \Concrete\Core\Statistics\UsageTracker\AggregateTracker $tracker
-     */
-    public function __construct($obj = null, AggregateTracker $tracker = null)
-    {
-        parent::__construct($obj);
-        $this->tracker = $tracker;
-    }
 
     /**
      * {@inheritdoc}
@@ -247,16 +236,7 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
      */
     public function getUsedFiles()
     {
-        $files = [];
-        $matches = [];
-        if (preg_match_all('/\<concrete-picture[^>]*?fID\s*=\s*[\'"]([^\'"]*?)[\'"]/i', $this->content, $matches)) {
-            list(, $ids) = $matches;
-            foreach ($ids as $id) {
-                $files[] = (int) $id;
-            }
-        }
-
-        return $files;
+        return static::getUsedFilesIn($this->content);
     }
 
     /**
@@ -402,20 +382,29 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
     public function save($args)
     {
         $data = $this->normalizeData($args);
-
         if (!is_array($data)) {
             throw new UserMessageException($data->toText());
         }
         parent::save($data);
-        $this->tracker->track($this);
+        $this->content = $data['content'];
         $this->cookieName = $data['cookieName'];
         $this->app->make(CookieJar::class)->clear($this->getCookieName());
+        if (version_compare(APP_VERSION, '9.0.2') < 0) {
+            $this->getTracker()->track($this);
+        }
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @see \Concrete\Core\Block\BlockController::delete()
+     */
     public function delete()
     {
+        if (version_compare(APP_VERSION, '9.0.2') < 0) {
+            $this->getTracker()->forget($this);
+        }
         parent::delete();
-        $this->tracker->forget($this);
     }
 
     public function action_generate_preview()
@@ -574,12 +563,12 @@ class Controller extends BlockController implements TrackableInterface, FileTrac
     }
 
     /**
-     * @param Controller|null $controller
+     * @param \Concrete\Package\GdprCookieNotice\Block\GdprCookieNotice\Controller|null $controller
      * @param bool $includeDefault
      *
      * @return string
      */
-    private function generateCss(Controller $controller = null, $includeDefault = false)
+    private function generateCss($controller = null, $includeDefault = false)
     {
         if ($controller === null) {
             $controller = $this;
@@ -629,5 +618,50 @@ EOT
     private function getDefaultAgreeText()
     {
         return t('Ok');
+    }
+
+    /**
+     * @return \Concrete\Core\Statistics\UsageTracker\AggregateTracker
+     */
+    private function getTracker()
+    {
+        if ($this->tracker === null) {
+            $this->tracker = $this->app->make(AggregateTracker::class);
+        }
+
+        return $this->tracker;
+    }
+
+    /**
+     * @param string|null $richText
+     *
+     * @return int[]|string[]
+     */
+    private static function getUsedFilesIn($richText)
+    {
+        $richText = (string) $richText;
+        if ($richText === '') {
+            return [];
+        }
+        $rxIdentifier = '(?<id>[1-9][0-9]{0,18})';
+        if (method_exists(\Concrete\Core\File\File::class, 'getByUUID')) {
+            $rxIdentifier = '(?:(?<uuid>[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12})|' . $rxIdentifier . ')';
+        }
+        $result = [];
+        $matches = null;
+        foreach ([
+            '/\<concrete-picture[^>]*?\bfID\s*=\s*[\'"]' . $rxIdentifier . '[\'"]/i',
+            '/\bFID_DL_' . $rxIdentifier . '\b/',
+        ] as $rx) {
+            if (!preg_match_all($rx, $richText, $matches)) {
+                continue;
+            }
+            $result = array_merge($result, array_map('intval', array_filter($matches['id'])));
+            if (isset($matches['uuid'])) {
+                $result = array_merge($result, array_map('strtolower', array_filter($matches['uuid'])));
+            }
+        }
+
+        return $result;
     }
 }
