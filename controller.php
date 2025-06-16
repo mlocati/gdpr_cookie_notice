@@ -2,11 +2,12 @@
 
 namespace Concrete\Package\GdprCookieNotice;
 
+use Concrete\Core\Database\EntityManager\Provider\ProviderInterface;
 use Concrete\Core\Package\Package;
 
 defined('C5_EXECUTE') or die('Access Denied.');
 
-class Controller extends Package
+class Controller extends Package implements ProviderInterface
 {
     protected $pkgHandle = 'gdpr_cookie_notice';
 
@@ -59,6 +60,16 @@ class Controller extends Package
     {
         parent::upgrade();
         $this->installXml();
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @see \Concrete\Core\Database\EntityManager\Provider\ProviderInterface::getDrivers()
+     */
+    public function getDrivers()
+    {
+        return [];
     }
 
     private function installXml()
